@@ -114,28 +114,6 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  // final List<Map<String, String>> demoData = [
-  //   {
-  //     // 'title': 'Title 1',
-  //     'subtitle': 'Subtitle 1',
-  //     'pdfPath':
-  //         'https://shrayansh.in/iti/pages/Quiz/Electrician/yash.pdf', // Path to PDF file for item 1
-  //   },
-  //   {
-  //     // 'title': 'Title 2',
-  //     'subtitle': 'Subtitle 2',
-  //     'pdfPath':
-  //         'https://shrayansh.in/iti/pages/Quiz/Electrician/yash.pdf', // Path to PDF file for item 2
-  //   },
-  //   {
-  //     // 'title': 'Title 3',
-  //     'subtitle': 'Subtitle 3',
-  //     'pdfPath':
-  //         'https://shrayansh.in/iti/pages/Quiz/Electrician/yash.pdf', // Path to PDF file for item 3
-  //   },
-  //   // Add more data as needed
-  // ];
-
   Future<bool> _onWillPop() async {
     return (await showDialog(
           context: context,
@@ -353,6 +331,12 @@ class _HomePageState extends State<HomePage> {
                       title: demoData[index]['name']!,
                       // subtitle: demoData[index]['subtitle']!,
                       onPressed: () {
+                        // showModalBottomSheet(
+                        //   context: context,
+                        //   builder: (context) {
+                        //     return quiz_decription();
+                        //   },
+                        // );
                         _openPdf(
                             'https://shrayansh.in/iti/pages/Quiz/${data_variable.read('trade')}/${demoData[index]['name']}.pdf'!,
                             '${data_variable.read('trade')}_${demoData[index]['name']}'!);
@@ -362,6 +346,55 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
             ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class quiz_decription extends StatelessWidget {
+  const quiz_decription({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: MediaQuery.of(context).size.height * 0.2,
+      width: MediaQuery.of(context).size.width,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(20), topRight: Radius.circular(20)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            Image.asset(
+              'assets/pending.png',
+              height: 100,
+            ),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text(
+                  'Sign up processing.',
+                  style: TextStyle(
+                      fontSize: MediaQuery.of(context).size.width * 0.05,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.red),
+                ),
+                Text(
+                  'Please wait while we verify.',
+                  style: TextStyle(
+                      fontSize: MediaQuery.of(context).size.width * 0.03,
+                      fontWeight: FontWeight.w400,
+                      color: Colors.black),
+                ),
+              ],
+            )
           ],
         ),
       ),

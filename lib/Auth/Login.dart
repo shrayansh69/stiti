@@ -300,6 +300,7 @@ class rejected extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.all(20.0),
         child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
             Image.asset(
               'assets/rejected.png',
@@ -347,6 +348,7 @@ class pendingg extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.all(20.0),
         child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
             Image.asset(
               'assets/pending.png',

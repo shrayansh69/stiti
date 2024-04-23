@@ -3,8 +3,11 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:mpitiproject/Auth/Login.dart';
 import 'package:mpitiproject/Home/Home.dart';
 import 'package:http/http.dart' as http;
+
+String finalScore = '';
 
 class MCQTestPage extends StatefulWidget {
   final String quizName;
@@ -17,6 +20,49 @@ class MCQTestPage extends StatefulWidget {
 List<dynamic> quizData = [];
 
 class _MCQTestPageState extends State<MCQTestPage> {
+  Future<void> uploadResult() async {
+    // Define the API endpoint
+    String apiUrl = 'https://shrayansh.in/yash/api/uploadResult';
+    int score = calculateScore();
+    // Create the request body
+    Map<String, String> requestBody = {
+      'table': "${widget.quizName}_result",
+      'studentID': data_variable.read('ID'),
+      'score': finalScore,
+    };
+
+    // Convert the request body to JSON format
+    String jsonBody = jsonEncode(requestBody);
+
+    try {
+      // Make the POST request
+      http.Response response = await http.post(
+        Uri.parse(apiUrl),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonBody,
+      );
+
+      // Check if the request was successful (status code 200)
+      if (response.statusCode == 200) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ResultsPage(
+                score: score,
+                quizName: quizData[0]['topic'],
+                totalQuestions: questions.length),
+          ),
+        );
+      } else {
+        // Handle error if the request was not successful
+        print('Failed to sign up. Status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      // Handle exceptions if any occur during the request
+      print('Error signing up: $e');
+    }
+  }
+
   PageController _pageController = PageController();
 
   int currentPageIndex = 0;
@@ -136,15 +182,19 @@ class _MCQTestPageState extends State<MCQTestPage> {
                 onPressed: () {
                   // Calculate score and navigate to results page
                   int score = calculateScore();
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => ResultsPage(
-                          score: score,
-                          quizName: quizData[0]['topic'],
-                          totalQuestions: questions.length),
-                    ),
-                  );
+                  setState(() {
+                    finalScore = '$score/${questions.length}';
+                  });
+                  uploadResult();
+                  // Navigator.push(
+                  //   context,
+                  //   MaterialPageRoute(
+                  //     builder: (context) => ResultsPage(
+                  //         score: score,
+                  //         quizName: quizData[0]['topic'],
+                  //         totalQuestions: questions.length),
+                  //   ),
+                  // );
                 },
                 child: Text(
                   'Submit Test',
@@ -252,13 +302,15 @@ class _MCQTestPageState extends State<MCQTestPage> {
                 return GestureDetector(
                   onTap: () {
                     setState(() {
-                      questionData['selectedOption'] = index;
+                      questionData['selectedOption'] =
+                          questionData['option${index + 1}'];
                     });
                   },
                   child: Container(
                     width: double.infinity,
                     decoration: BoxDecoration(
-                      color: questionData['selectedOption'] == index
+                      color: questionData['selectedOption'] ==
+                              questionData['option${index + 1}']
                           ? Color(0xffFE586A) // Change color as needed
                           : Color.fromARGB(255, 212, 249, 255),
                       borderRadius: BorderRadius.circular(8.0),
@@ -268,7 +320,8 @@ class _MCQTestPageState extends State<MCQTestPage> {
                     child: Text(
                       option,
                       style: TextStyle(
-                        color: questionData['selectedOption'] == index
+                        color: questionData['selectedOption'] ==
+                                questionData['option${index + 1}']
                             ? Colors.white // Change text color as needed
                             : Colors.black,
                       ),
@@ -299,9 +352,15 @@ class _MCQTestPageState extends State<MCQTestPage> {
 
   int calculateScore() {
     int score = 0;
+
     for (int i = 0; i < questions.length; i++) {
-      if (questions[i]['selectedOption'] != null &&
-          questions[i]['selectedOption'] == questions[i]['correctIndex']) {
+      String selec = questions[i]['selectedOption'] == null
+          ? 'null'
+          : questions[i]['selectedOption'].trim();
+      String corre = questions[i]['correct_answer'].trim();
+      print(selec + " : " + corre);
+      if (selec == corre) {
+        print('hello');
         score++;
       }
     }

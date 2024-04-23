@@ -125,9 +125,15 @@ class _SignUpState extends State<SignUp> {
         data_variable.write('trade', signup_trade);
         data_variable.write('ID', UserID);
         data_variable.write('loggedIn', 'true');
-        Navigator.push(context, MaterialPageRoute(builder: (context) {
-          return HomePage();
-        }));
+        showModalBottomSheet(
+          context: context,
+          builder: (context) {
+            return SignupSuccess();
+          },
+        );
+        // Navigator.push(context, MaterialPageRoute(builder: (context) {
+        //   return HomePage();
+        // }));
         // You can handle the response here if needed
       } else {
         // Handle error if the request was not successful
@@ -556,6 +562,79 @@ class _SignUpState extends State<SignUp> {
               ],
             ),
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class SignupSuccess extends StatelessWidget {
+  const SignupSuccess({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: MediaQuery.of(context).size.height * 0.27,
+      width: MediaQuery.of(context).size.width,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(20), topRight: Radius.circular(20)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            Row(
+              children: [
+                Image.asset(
+                  'assets/chotu.png',
+                  height: 100,
+                ),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(
+                      'Request submitted\nsuccessfully.',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                          fontSize: MediaQuery.of(context).size.width * 0.05,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.red),
+                    ),
+                    Text(
+                      'Please wait while we verify.',
+                      style: TextStyle(
+                          fontSize: MediaQuery.of(context).size.width * 0.03,
+                          fontWeight: FontWeight.w400,
+                          color: Colors.black),
+                    ),
+                  ],
+                )
+              ],
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => Login()),
+                );
+              },
+              style: ButtonStyle(
+                backgroundColor:
+                    MaterialStateProperty.all<Color>(Color(0xffFE586A)),
+                minimumSize: MaterialStateProperty.all<Size>(
+                    Size(double.infinity, 58)), // Width 100%, height 48
+                foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
+              ),
+              child: Text(
+                'Login',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+              ),
+            ),
+          ],
         ),
       ),
     );

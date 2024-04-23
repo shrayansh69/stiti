@@ -6,10 +6,6 @@ import 'package:mpitiproject/Splash/SplashScreen.dart';
 import 'package:mpitiproject/mcq.dart';
 
 void main() {
-  // runApp(DevicePreview(
-  //   enabled: true,
-  //   builder: (context) => MyApp(),
-  // ));
   runApp(MyApp());
 }
 
