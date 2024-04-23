@@ -92,6 +92,8 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  bool attempted = false;
+
   Future<Object> fetchResponse() async {
     final url =
         'https://shrayansh.in/yash/api/quiz/${data_variable.read('trade')}';
@@ -133,6 +135,142 @@ class _HomePageState extends State<HomePage> {
           ),
         )) ??
         false;
+  }
+
+  Future<Object> fetchResponse12(int index) async {
+    // final url =
+    //     'https://shrayansh.in/yash/api/attempted?table=${data_variable.read('trade')}_${demoData[index]['name']}_result&studentID=1234';
+    final url =
+        'https://shrayansh.in/yash/api/attempted?table=${data_variable.read('trade')}_${demoData[index]['name']}_result&studentID=${data_variable.read('ID')}';
+
+    try {
+      final response = await http.get(Uri.parse(url));
+
+      if (response.statusCode == 200) {
+        if (response.body == 'false') {
+          print('false');
+          setState(() {
+            attempted = false;
+          });
+
+          Modalbottomsheet(index, '');
+        } else {
+          setState(() {
+            attempted = true;
+          });
+
+          Map<String, dynamic> responseData = jsonDecode(response.body);
+          print(responseData['score']);
+          Modalbottomsheet(index, responseData['score']);
+        }
+
+        return response.body == 'true';
+      } else {
+        throw Exception('Failed to fetch data: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error fetching data: $e');
+      return false;
+    }
+  }
+
+  void Modalbottomsheet(int index, String scoree) {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        // return QuizDescription(
+        //   quizName: demoData[index]['name'],
+        // );
+        return Container(
+          height: MediaQuery.of(context).size.height * 0.2,
+          width: MediaQuery.of(context).size.width,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(20), topRight: Radius.circular(20)),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      demoData[index]['name'],
+                      style: TextStyle(
+                          fontSize: MediaQuery.of(context).size.width * 0.05,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.red),
+                    ),
+                    Text(
+                      'Your Short description for the selected test.',
+                      style: TextStyle(
+                          fontSize: MediaQuery.of(context).size.width * 0.03,
+                          fontWeight: FontWeight.w400,
+                          color: Colors.black),
+                    ),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    attempted == true
+                        ? Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Score : ',
+                                style: TextStyle(
+                                    fontSize:
+                                        MediaQuery.of(context).size.width *
+                                            0.05,
+                                    fontWeight: FontWeight.w500,
+                                    color: Colors.grey),
+                              ),
+                              SizedBox(
+                                width: 15.0,
+                              ),
+                              Text(
+                                scoree,
+                                style: TextStyle(
+                                    fontSize:
+                                        MediaQuery.of(context).size.width *
+                                            0.07,
+                                    fontWeight: FontWeight.w700,
+                                    color: Colors.green),
+                              ),
+                            ],
+                          )
+                        : Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              ElevatedButton(
+                                onPressed: () {
+                                  _openPdf(
+                                      'https://shrayansh.in/iti/pages/Quiz/${data_variable.read('trade')}/${demoData[index]['name']}.pdf'!,
+                                      '${data_variable.read('trade')}_${demoData[index]['name']}'!);
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  foregroundColor: Colors.white,
+                                  backgroundColor:
+                                      Color(0xFFFE586A), // Text color
+                                  elevation: 0, // Elevation (shadow)
+                                  minimumSize:
+                                      Size(200, 45), // Width and height
+                                ),
+                                child: Text('Start Test'),
+                              ),
+                            ],
+                          )
+                  ],
+                )
+              ],
+            ),
+          ),
+        );
+      },
+    );
   }
 
   void _openPdf(String pdfPath, String quizName) {
@@ -331,70 +469,16 @@ class _HomePageState extends State<HomePage> {
                       title: demoData[index]['name']!,
                       // subtitle: demoData[index]['subtitle']!,
                       onPressed: () {
-                        // showModalBottomSheet(
-                        //   context: context,
-                        //   builder: (context) {
-                        //     return quiz_decription();
-                        //   },
-                        // );
-                        _openPdf(
-                            'https://shrayansh.in/iti/pages/Quiz/${data_variable.read('trade')}/${demoData[index]['name']}.pdf'!,
-                            '${data_variable.read('trade')}_${demoData[index]['name']}'!);
+                        fetchResponse12(index);
+                        // _openPdf(
+                        //     'https://shrayansh.in/iti/pages/Quiz/${data_variable.read('trade')}/${demoData[index]['name']}.pdf'!,
+                        //     '${data_variable.read('trade')}_${demoData[index]['name']}'!);
                       },
                     );
                   },
                 ),
               ),
             ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class quiz_decription extends StatelessWidget {
-  const quiz_decription({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: MediaQuery.of(context).size.height * 0.2,
-      width: MediaQuery.of(context).size.width,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(20), topRight: Radius.circular(20)),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            Image.asset(
-              'assets/pending.png',
-              height: 100,
-            ),
-            Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Text(
-                  'Sign up processing.',
-                  style: TextStyle(
-                      fontSize: MediaQuery.of(context).size.width * 0.05,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.red),
-                ),
-                Text(
-                  'Please wait while we verify.',
-                  style: TextStyle(
-                      fontSize: MediaQuery.of(context).size.width * 0.03,
-                      fontWeight: FontWeight.w400,
-                      color: Colors.black),
-                ),
-              ],
-            )
           ],
         ),
       ),
