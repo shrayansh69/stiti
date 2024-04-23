@@ -4,8 +4,11 @@ import 'package:get_storage/get_storage.dart';
 import 'package:mpitiproject/Auth/Login.dart';
 import 'package:mpitiproject/Splash/SplashScreen.dart';
 import 'package:mpitiproject/mcq.dart';
+import 'package:permission_handler/permission_handler.dart';
 
-void main() {
+void main() async {
+  await GetStorage.init();
+
   runApp(MyApp());
 }
 

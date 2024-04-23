@@ -27,8 +27,6 @@ class _LoginState extends State<Login> {
       final response = await http.get(Uri.parse(url));
 
       if (response.statusCode == 200) {
-        Map<String, dynamic> responseData = jsonDecode(response.body);
-        print(responseData['name']);
         if (response.body == "false") {
           setState(() {});
           ScaffoldMessenger.of(context).showSnackBar(
@@ -41,6 +39,7 @@ class _LoginState extends State<Login> {
             ),
           );
         } else {
+          Map<String, dynamic> responseData = jsonDecode(response.body);
           if (responseData['status'] == 'P') {
             showModalBottomSheet(
               context: context,
