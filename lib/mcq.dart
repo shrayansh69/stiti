@@ -107,6 +107,7 @@ class _MCQTestPageState extends State<MCQTestPage> {
 
   @override
   Widget build(BuildContext context) {
+    print(widget.quizName);
     return Scaffold(
       appBar: AppBar(
         title: Text('MCQ Test'),
